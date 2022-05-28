@@ -78,6 +78,17 @@ function ItemPersistanceSaveSchedule()
 
 package item_persistance
 {
+    function miniGameCanUse(%player, %thing)
+    {
+        //fixes minigame players not being able to pick up these items
+        if(%thing.static && %thing.LoadedPersistantItem)
+        {
+            return 1;
+        }
+
+        parent::miniGameCanUse(%player, %thing);
+    }
+
     function ItemData::OnAdd(%db,%obj)
     {
         //new item created
