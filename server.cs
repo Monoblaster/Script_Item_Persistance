@@ -82,7 +82,13 @@ package item_persistance
     {
         //new item created
         //make sure to add it to a simset for easy keeping
-        $ItemPersistance::ItemSet.add(%obj);
+
+        //DO NOT SAVE ITEMS SPAWNS!!
+        if(!%obj.static || %obj.LoadedPersistantItem)
+        {
+            $ItemPersistance::ItemSet.add(%obj);
+        }
+        
 
         return Parent::OnAdd(%db,%obj);
     }
