@@ -1,17 +1,17 @@
-$ItemPersistance::SaveInterval = 60000 * 5; //five minutes
-$ItemPersistance::FileLocation = "config/server/ItemPersistance/";
+$ItemPersistence::SaveInterval = 60000 * 5; //five minutes
+$ItemPersistence::FileLocation = "config/server/ItemPersistence/";
 
-$ItemPersistance::ItemSet = new SimSet();
-$ItemPersistance::SaveSchedule = 0;
+$ItemPersistence::ItemSet = new SimSet();
+$ItemPersistence::SaveSchedule = 0;
 
 //remove item popping
 function Item::schedulePop(%obj){}
 
-function ItemPersistanceLoad()
+function ItemPersistenceLoad()
 {
     //create the file object for reading
     %in = new fileObject();
-    %success = %in.openForRead($ItemPersistance::FileLocation @ "items.txt");
+    %success = %in.openForRead($ItemPersistence::FileLocation @ "items.txt");
 
     if(%success)
     {
@@ -33,27 +33,27 @@ function ItemPersistanceLoad()
     }
     else
     {
-        warn("Item Persistance: Failed to open item file for loading");
+        warn("Item Persistence: Failed to open item file for loading");
     }
 
     %in.close();
     %in.delete();
 
     //after the file is finished loading start the save schedule
-    ItemPersistanceSaveSchedule();
+    ItemPersistenceSaveSchedule();
 }
 
-function ItemPersistanceSaveSchedule()
+function ItemPersistenceSaveSchedule()
 {
-    cancel($ItemPersistance::SaveSchedule);
+    cancel($ItemPersistence::SaveSchedule);
     
     //create the file object for writing
     %out = new fileObject();
-    %success = %out.openForWrite($ItemPersistance::FileLocation @ "items.txt");
+    %success = %out.openForWrite($ItemPersistence::FileLocation @ "items.txt");
 
     if(%success)
     {
-        %set = $ItemPersistance::ItemSet;
+        %set = $ItemPersistence::ItemSet;
         %count = %set.getCount();
         for(%i = 0; %i < %count; %i++)
         {
@@ -67,16 +67,16 @@ function ItemPersistanceSaveSchedule()
     }
     else
     {
-        warn("Item Persistance: Failed to open item file for saving");
+        warn("Item Persistence: Failed to open item file for saving");
     }
 
     %out.close();
     %out.delete();
 
-    $ItemPersistance::SaveSchedule = schedule($ItemPersistance::SaveInterval,$ItemPersistance::ItemSet,"ItemPersistanceSaveSchedule");
+    $ItemPersistence::SaveSchedule = schedule($ItemPersistence::SaveInterval,$ItemPersistence::ItemSet,"ItemPersistenceSaveSchedule");
 }
 
-package item_persistance
+package item_persistence
 {
     function miniGameCanUse(%player, %thing)
     {
@@ -97,7 +97,7 @@ package item_persistance
         //DO NOT SAVE ITEMS SPAWNS!!
         if(!%obj.static || %obj.LoadedPersistantItem)
         {
-            $ItemPersistance::ItemSet.add(%obj);
+            $ItemPersistence::ItemSet.add(%obj);
         }
         
 
@@ -117,6 +117,6 @@ package item_persistance
         }
     }
 };
-activatePackage(item_persistance);
+activatePackage(item_persistence);
 
-ItemPersistanceLoad();
+ItemPersistenceLoad();
